@@ -1,7 +1,7 @@
 Auteurs
 Ce projet a été réalisé par :
-Mohamed Omar BEN HAMMOUDA
-Ihab Alrashiiny
+#Mohamed Omar BEN HAMMOUDA
+#Ihab Alrashiiny
 Ou de manière plus professionnelle :
 Authors
 Developed by Mohamed Omar BEN HAMMOUDA and Ihab Alrashiiny as part of a C programming and algorithmic problem-solving project.
