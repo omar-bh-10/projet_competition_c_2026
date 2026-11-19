@@ -4,6 +4,7 @@
 
 #define MAX_PSEUDO 40
 
+// les 3 etats d'une competition
 typedef enum {
     OUVERTE,
     FERMEE,
@@ -11,11 +12,13 @@ typedef enum {
 
 } Etat_de_competition;
 
+ //definir un type competiteur
 typedef struct Competiteur {
     int id_competiteur;
     char pseudo[MAX_PSEUDO];
 } Competiteur;
 
+//definir le type competition
 typedef struct Competition {
     Etat_de_competition etat;
 
