@@ -5,13 +5,11 @@
 #include "sauvegarde.h"
 #include "competition.h"
 
-void sauvegarder_fichier_competition(Competition *c,
-                                     const char *nomFichier)
+void sauvegarder_fichier_competition(Competition *c, const char *nomFichier)
 {
     if(c == NULL)
     {
-        fprintf(stderr,
-                "Erreur : aucune competition a sauvegarder.\n");
+        fprintf(stderr, "Erreur : aucune competition a sauvegarder.\n");
         return;
     }
 
@@ -19,29 +17,19 @@ void sauvegarder_fichier_competition(Competition *c,
 
     if(fichier == NULL)
     {
-        fprintf(stderr,
-                "Erreur lors de l'ouverture du fichier.\n");
+        fprintf(stderr, "Erreur lors de l'ouverture du fichier.\n");
         return;
     }
 
-    fprintf(fichier,
-            "=====================================\n");
-    fprintf(fichier,
-            "          COMPETITION\n");
-    fprintf(fichier,
-            "=====================================\n");
+    fprintf(fichier,"=====================================\n");
+    fprintf(fichier,"          COMPETITION\n");
+    fprintf(fichier, "=====================================\n");
 
-    fprintf(fichier,
-            "Participants : %d/%d\n",
-            c->nbParticipants,
-            c->maxParticipants);
+    fprintf(fichier,  "Participants : %d/%d\n",  c->nbParticipants, c->maxParticipants);
 
-    fprintf(fichier,
-            "Nombre de tours : %d\n",
-            c->nbTours);
+    fprintf(fichier,  "Nombre de tours : %d\n", c->nbTours);
 
-    fprintf(fichier,
-            "Etat : ");
+    fprintf(fichier, "Etat : ");
 
     switch(c->etat)
     {
@@ -58,85 +46,63 @@ void sauvegarder_fichier_competition(Competition *c,
             break;
     }
 
-    fprintf(fichier,
-            "\n===== PARTICIPANTS =====\n");
+    fprintf(fichier, "\n===== PARTICIPANTS =====\n");
 
     if(c->nbParticipants == 0)
     {
-        fprintf(fichier,
-                "Aucun participant enregistre.\n");
+        fprintf(fichier, "Aucun participant enregistre.\n");
     }
     else
     {
         for(int i = 0; i < c->nbParticipants; i++)
         {
-            fprintf(fichier,
-                    "[%d] %s\n",
-                    c->participants[i].id_competiteur,
-                    c->participants[i].pseudo);
+            fprintf(fichier,"[%d] %s\n",c->participants[i].id_competiteur,   c->participants[i].pseudo);
         }
     }
 
-    fprintf(fichier,
-            "\n===== MATCHS =====\n");
+    fprintf(fichier, "\n===== MATCHS =====\n");
 
     for(int i = 0; i < c->nbMatchs; i++)
     {
         Match *m = c->matchs[i];
 
-        fprintf(fichier,
-                "\n---------------------------------\n");
+        fprintf(fichier,  "\n---------------------------------\n");
 
         if(m == c->racine)
         {
-            fprintf(fichier,
-                    "FINALE (MATCH %d)\n",
-                    m->id);
+            fprintf(fichier, "FINALE (MATCH %d)\n",m->id);
         }
         else if(m->parent == c->racine)
         {
-            fprintf(fichier,
-                    "DEMI-FINALE (MATCH %d)\n",
-                    m->id);
+            fprintf(fichier,"DEMI-FINALE (MATCH %d)\n", m->id);
         }
         else
         {
-            fprintf(fichier,
-                    "MATCH %d\n",
-                    m->id);
+            fprintf(fichier, "MATCH %d\n", m->id);
         }
 
-        fprintf(fichier,
-                "---------------------------------\n");
+        fprintf(fichier, "---------------------------------\n");
 
-        fprintf(fichier,
-                "Joueur 1 : ");
+        fprintf(fichier,"Joueur 1 : ");
 
         if(m->joueur1 != NULL)
         {
-            fprintf(fichier,
-                    "%s\n",
-                    m->joueur1->pseudo);
+            fprintf(fichier,"%s\n",m->joueur1->pseudo);
         }
         else
         {
-            fprintf(fichier,
-                    "EN ATTENTE\n");
+            fprintf(fichier, "EN ATTENTE\n");
         }
 
-        fprintf(fichier,
-                "Joueur 2 : ");
+        fprintf(fichier, "Joueur 2 : ");
 
         if(m->joueur2 != NULL)
         {
-            fprintf(fichier,
-                    "%s\n",
-                    m->joueur2->pseudo);
+            fprintf(fichier,  "%s\n", m->joueur2->pseudo);
         }
         else
         {
-            fprintf(fichier,
-                    "EN ATTENTE\n");
+            fprintf(fichier, "EN ATTENTE\n");
         }
 
         fprintf(fichier, "Vainqueur : ");
