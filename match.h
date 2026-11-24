@@ -1,7 +1,9 @@
 #ifndef MATCH_H
 #define MATCH_H
 
-#include "competition.h"
+typedef struct Competiteur Competiteur;
+typedef struct  Competition Competition ;
+
 
 typedef struct Match{
     int id;
@@ -13,6 +15,7 @@ typedef struct Match{
 
     struct Match *gauche;
     struct Match *droite;
+    struct Match *parent;
 
 } Match;
 
@@ -22,7 +25,7 @@ Match* creer_match(int id);
 void afficher_match(Match *m);
 
 
-int enregistrer_vainqueur(Match *m, Competiteur *vainqueur);
+int enregistrer_vainqueur(Competition* c,Match *m, Competiteur *vainqueur);
 
 int match_complet(Match *m);
 int match_termine(Match *m);

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "match.h"
+#include "competition.h"
 
 Match* creer_match(int id)
 {
@@ -19,6 +21,7 @@ Match* creer_match(int id)
 
     m->gauche = NULL;
     m->droite = NULL;
+    m->parent = NULL;
 
     return m;
 }
@@ -43,9 +46,9 @@ int match_termine(Match *m)
     return (m->vainqueur != NULL);
 }
 
-int enregistrer_vainqueur(Match *m, Competiteur *vainqueur)
+int enregistrer_vainqueur(Competition *c,Match *m,Competiteur *vainqueur)
 {
-    if(m == NULL || vainqueur == NULL)
+    if(c == NULL || m == NULL || vainqueur == NULL)
     {
         return 0;
     }
@@ -57,16 +60,15 @@ int enregistrer_vainqueur(Match *m, Competiteur *vainqueur)
         return 0;
     }
 
-    /* Résultat déjà enregistré */
-    if(m->vainqueur != NULL)
+    /* Match déjà terminé */
+    if(match_termine(m))
     {
         printf("Le vainqueur est deja defini.\n");
         return 0;
     }
 
-    /* Le vainqueur doit être un des deux joueurs */
-    if(vainqueur != m->joueur1 &&
-       vainqueur != m->joueur2)
+    /* Le vainqueur doit être un des participants */
+    if(vainqueur != m->joueur1 && vainqueur != m->joueur2)
     {
         printf("Ce joueur ne participe pas a ce match.\n");
         return 0;
@@ -74,9 +76,33 @@ int enregistrer_vainqueur(Match *m, Competiteur *vainqueur)
 
     m->vainqueur = vainqueur;
 
-    printf("Vainqueur du match %d : %s\n",
-           m->id,
-           vainqueur->pseudo);
+    /* Propagation automatique dans l'arbre */
+    if(m->parent != NULL)
+    {
+        if(m->parent->gauche == m)
+        {
+            m->parent->joueur1 = vainqueur;
+            printf("Le vainqueur %s est qualifie pour le match %d\n",vainqueur->pseudo,m->parent->id);
+        }
+        else if(m->parent->droite == m)
+        {
+            m->parent->joueur2 = vainqueur;
+            printf("Le vainqueur %s est qualifie pour le match %d\n",vainqueur->pseudo,m->parent->id);
+        }
+    }
+
+    printf("Vainqueur du match %d : %s\n", m->id,vainqueur->pseudo);
+
+    /* Si c'est la finale */
+    if(m == c->racine)
+    {
+        c->etat = TERMINEE;
+
+        printf("\n=================================\n");
+        printf("COMPETITION TERMINEE\n");
+        printf("Champion : %s\n", vainqueur->pseudo);
+        printf("=================================\n");
+    }
 
     return 1;
 }
@@ -88,7 +114,18 @@ void afficher_match(Match *m)
         return;
     }
 
-    printf("\n===== MATCH %d =====\n", m->id);
+    printf("\n=================================\n");
+
+    if(m->parent == NULL)
+    {
+        printf("       FINALE (MATCH %d)\n", m->id);
+    }
+    else
+    {
+        printf("       MATCH %d\n", m->id);
+    }
+
+    printf("=================================\n");
 
     printf("Joueur 1 : ");
 
@@ -98,7 +135,7 @@ void afficher_match(Match *m)
     }
     else
     {
-        printf("NON DEFINI\n");
+        printf("EN ATTENTE DU VAINQUEUR\n");
     }
 
     printf("Joueur 2 : ");
@@ -109,7 +146,7 @@ void afficher_match(Match *m)
     }
     else
     {
-        printf("NON DEFINI\n");
+        printf("EN ATTENTE DU VAINQUEUR\n");
     }
 
     printf("Vainqueur : ");
@@ -123,6 +160,7 @@ void afficher_match(Match *m)
         printf("AUCUN\n");
     }
 }
+
 
 void detruire_match(Match *m)
 {

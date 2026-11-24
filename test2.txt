@@ -1,0 +1,26 @@
+=========== COMPETITION ===========
+Participants : 4/4
+Etat : TERMINEE
+
+===== LISTE DES PARTICIPANTS =====
+[1] omar
+[2] messi
+[3] maradona
+[4] cr7
+
+===== LISTE DES MATCHS =====
+
+----- MATCH 1 -----
+Joueur 1 : omar
+Joueur 2 : cr7
+Vainqueur : omar
+
+----- MATCH 2 -----
+Joueur 1 : omar
+Joueur 2 : messi
+Vainqueur : omar
+
+----- MATCH 3 -----
+Joueur 1 : maradona
+Joueur 2 : cr7
+Vainqueur : cr7

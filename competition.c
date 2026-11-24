@@ -29,24 +29,104 @@ Competition* creer_competition(int nb_de_tours){
     c->nbParticipants = 0;
 
     /* Allocation du tableau des compétiteurs*/
-    c->participants = malloc(c->nbParticipants * sizeof(Competiteur));
+    c->participants = malloc(c->maxParticipants * sizeof(Competiteur));
+
+    if(c->participants == NULL){
+        free(c);
+        return NULL;
+    }
 
     /* Initialisation pour les matchs*/
     c->matchs = NULL;
     c->nbMatchs = 0;
     c->racine = NULL;
 
+    c->nbMatchs = c->maxParticipants - 1;
+    c->matchs = malloc(sizeof(Match*) * c->nbMatchs);
+
+    if(c->matchs == NULL){
+        free(c->participants);
+        free(c);
+        return NULL;
+    }
+
+    /* Creation des matchs*/
+
+    for(int i=0; i<c->nbMatchs;i++){
+        c->matchs[i] = creer_match(i+1);
+
+        if(c->matchs[i] == NULL){
+            return NULL;
+
+        }
+
+    }
+
+    /* Construction de l'arbre */
+    for(int i=0; i<c->nbMatchs;i++){
+        int gauche = 2*i + 1;
+        int droite = 2*i + 2 ;
+
+        if(gauche < c->nbMatchs){
+            c->matchs[i]->gauche = c->matchs[gauche];
+            c->matchs[gauche]->parent = c->matchs[i];
+        }
+
+        if(droite < c->nbMatchs){
+            c->matchs[i]->droite = c->matchs[droite];
+            c->matchs[droite]->parent = c->matchs[i];
+        }  
+    }
+
+    /* La finale */
+    c->racine = c->matchs[0];
+
     return c;
 }
 
+int Existance_de_pseudo(Competition *c, char pseudo[])
+{
+    if(c == NULL)
+    {
+        return 0;
+    }
 
-void afficher_competition(Competition* c){
-    printf("********** COMPETITION ***********");
-    printf("Participants: %d %d \n",c->nbParticipants, c->maxParticipants);
+    for(int i = 0; i < c->nbParticipants; i++)
+    {
+        if(strcmp(c->participants[i].pseudo, pseudo) == 0)
+        {
+            return 1;
+        }
+    }
 
-    printf("Etat: ");
+    return 0;
+}
 
-    switch (c->etat)
+
+void afficher_competition(Competition *c)
+{
+    if(c == NULL)
+    {
+        fprintf(stderr,
+                "Erreur : aucune competition a afficher.\n");
+        return;
+    }
+
+    printf("\n");
+    printf("=====================================\n");
+    printf("          COMPETITION\n");
+    printf("=====================================\n");
+
+    printf("Nombre de participants : %d/%d\n",
+           c->nbParticipants,
+           c->maxParticipants);
+
+    printf("Nombre de tours : %d\n",
+           c->nbTours);
+
+    printf("Etat : ");
+
+    switch(c->etat)
     {
         case OUVERTE:
             printf("OUVERTE\n");
@@ -61,15 +141,84 @@ void afficher_competition(Competition* c){
             break;
     }
 
-    printf("\n La liste des participants : \n");
+    printf("\n===== PARTICIPANTS =====\n");
 
-    for(int i=0;i<c->nbParticipants;i++){
-        printf("%d : %s\n", i+1, c->participants[i].pseudo);
+    if(c->nbParticipants == 0)
+    {
+        printf("Aucun participant enregistre.\n");
+    }
+    else
+    {
+        for(int i = 0; i < c->nbParticipants; i++)
+        {
+            printf("[%d] %s\n",
+                   c->participants[i].id_competiteur,
+                   c->participants[i].pseudo);
+        }
     }
 
+    printf("\n===== MATCHS =====\n");
+
+    for(int i = 0; i < c->nbMatchs; i++)
+    {
+        Match *m = c->matchs[i];
+
+        printf("\n---------------------------------\n");
+
+        if(m == c->racine)
+        {
+            printf("FINALE (Match %d)\n", m->id);
+        }
+        else
+        {
+            printf("Match %d\n", m->id);
+        }
+
+        printf("---------------------------------\n");
+
+        printf("Joueur 1 : ");
+        if(m->joueur1 != NULL)
+        {
+            printf("%s\n", m->joueur1->pseudo);
+        }
+        else
+        {
+            printf("EN ATTENTE\n");
+        }
+
+        printf("Joueur 2 : ");
+        if(m->joueur2 != NULL)
+        {
+            printf("%s\n", m->joueur2->pseudo);
+        }
+        else
+        {
+            printf("EN ATTENTE\n");
+        }
+
+        printf("Vainqueur : ");
+        if(m->vainqueur != NULL)
+        {
+            printf("%s\n", m->vainqueur->pseudo);
+        }
+        else
+        {
+            printf("AUCUN\n");
+        }
+    }
+
+    if(c->etat == TERMINEE &&
+       c->racine != NULL &&
+       c->racine->vainqueur != NULL)
+    {
+        printf("\n=====================================\n");
+        printf("CHAMPION DE LA COMPETITION : %s\n",
+               c->racine->vainqueur->pseudo);
+        printf("=====================================\n");
+    }
+
+    printf("\n=====================================\n");
 }
-
-
 
 void ajouter_competiteur(Competition *c, const char *pseudo){
 
@@ -109,67 +258,102 @@ void ajouter_competiteur(Competition *c, const char *pseudo){
 
     c->nbParticipants++;
 
-    printf("Competiteur ajoute avec succes! \n");
     
     /* si nous avons atteint la nb max de participants on ferme l'ajout à la competition*/
     if(c->nbParticipants == c->maxParticipants){
-        c->etat = FERMEE;
-        printf("Competition automatiquement fermee! \n");
+        fermer_competition(c);
     }
 
 }
 
-void fermer_competition(Competition* c){
-
-    if(c == NULL){
+void fermer_competition(Competition *c)
+{
+    if (c == NULL)
+    {
+        fprintf(stderr, "Erreur : competition inexistante.\n");
         return;
     }
 
-    if(c->etat == OUVERTE){
-
-        c->etat = FERMEE;
-        printf("Competition fermee! \n");
-    }
-    else{
-        printf("Impossible de modifier cet etat! \n");
-    }
-}
-
-
-void sauvegarder_competition(Competition* c, const char *nom_de_Fichier){
-    
-}
-
-void detruire_competition(Competition* c){
-    if(c== NULL){
+    if (c->etat == FERMEE)
+    {
+        printf("La competition est deja fermee.\n");
         return;
     }
 
-    /* liberation du tableau des participants*/
-    free(c->participants);
-
-    /* liberation du tableau des matchs*/
-    if(c->matchs != NULL){
-        free(c->matchs);
+    if (c->etat == TERMINEE)
+    {
+        printf("La competition est terminee.\n");
+        return;
     }
 
-    /* liberation de la strucutre principale*/
-    free(c);
-
-    printf("Memoire liberee! \n");
-
+    c->etat = FERMEE;
+    creer_matchs_premier_tour(c);
+    printf("Competition fermee avec succes !\n");
 }
 
+void creer_matchs_premier_tour(Competition *c)
+{
+    if(c == NULL)
+    {
+        return;
+    }
 
-int Existance_de_pseudo(Competition* c, char pseudo[]){
+    int indiceParticipant = 0;
 
-    for(int i=0; i< c->nbParticipants; i++){
+    /* Les feuilles commencent à nbMatchs/2 */
+    for(int i = c->nbMatchs / 2; i < c->nbMatchs;i++)
+    {
+        Match *m = c->matchs[i];
 
-        if(strcmp(c->participants[i].pseudo, pseudo) == 0){
+        if(indiceParticipant < c->nbParticipants)
+        {
+            m->joueur1 = &c->participants[indiceParticipant++];
+        }
 
-            return 1;
+        if(indiceParticipant < c->nbParticipants)
+        {
+            m->joueur2 = &c->participants[indiceParticipant++];
         }
     }
+}
 
-    return 0;
+
+void detruire_competition(Competition *c)
+{
+    if(c == NULL)
+    {
+        return;
+    }
+
+    /* Liberation des matchs */
+    if(c->matchs != NULL)
+    {
+        for(int i = 0; i < c->nbMatchs; i++)
+        {
+            if(c->matchs[i] != NULL)
+            {
+                detruire_match(c->matchs[i]);
+            }
+        }
+
+        free(c->matchs);
+        c->matchs = NULL;
+    }
+
+    /* Liberation du tableau des participants */
+    if(c->participants != NULL)
+    {
+        free(c->participants);
+        c->participants = NULL;
+    }
+
+    c->racine = NULL;
+    c->nbMatchs = 0;
+    c->nbParticipants = 0;
+    c->maxParticipants = 0;
+
+    /* Liberation de la competition */
+    free(c);
+
+    printf("Memoire liberee avec succes !\n");
 }

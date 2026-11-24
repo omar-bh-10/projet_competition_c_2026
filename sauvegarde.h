@@ -3,8 +3,11 @@
 
 #include "competition.h"
 
-void sauvegarder_fichier_competition(Competition* c, const char *nomFichier);
-
-
+/*
+ * Sauvegarde une compétition dans un fichier texte.
+ * c : compétition à sauvegarder
+ * nomFichier  : nom du fichier de sauvegarde
+ */
+void sauvegarder_fichier_competition(Competition *c,const char *nomFichier);
 
 #endif

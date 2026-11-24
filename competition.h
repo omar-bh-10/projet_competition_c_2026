@@ -44,13 +44,14 @@ void afficher_competition(Competition* c);
 
 void fermer_competition(Competition* c);
 
-void sauvegarder_competition(Competition* c, const char *nom_de_Fichier);
-
 void detruire_competition(Competition* c);
 
 int Existance_de_pseudo(Competition *c, char pseudo[]);
 
+void creer_matchs_premier_tour(Competition *c);
+
 void enregistrer_resultat(Competition* c, int id_match, int vainqueur);
+
 
 
 

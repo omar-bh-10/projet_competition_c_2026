@@ -1,0 +1,20 @@
+
+ La liste des participants : 
+Participants: 4 4 
+1 : Omar
+2 : Ihab
+3 : Marco
+4 : Messi
+Etat: OUVERTE
+
+ ========Liste des matchs========
+
+MATCH N1
+Joueur 1 : Omar
+Joueur 2 : Ihab
+Vainqueur : Omar
+
+MATCH N2
+Joueur 1 : Marco
+Joueur 2 : Messi
+Vainqueur : Messi

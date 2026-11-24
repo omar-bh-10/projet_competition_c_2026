@@ -1,64 +1,119 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
 #include "sauvegarde.h"
 #include "competition.h"
 
-/* Sauvegarde l'etat d'une competition dans un fichier texte.
- * c          : la competition a sauvegarder
- * nomFichier : le nom du fichier a creer (ex : "sauvegarde.txt")
- * Si le fichier existe deja, son contenu est ecra */
-
-
-
-
-
-void sauvegarder_fichier_competition(Competition* c, const char* nomFichier){
-    //pas de competition alors pas de sauvegarde retourne rien
-    if(c == NULL){
+void sauvegarder_fichier_competition(Competition *c,const char *nomFichier)
+{
+    if(c == NULL)
+    {
+        fprintf(stderr, "Erreur : aucune competition a sauvegarder.\n");
         return;
     }
 
-    // permet d'ouvrir un fichier et de l'associer a un flux de creer un fichier ou d'écraser et de remplacer par les nouvelles données
-    FILE *fichier=fopen(nomFichier, "w");
+    FILE *fichier = fopen(nomFichier, "w");
 
-    //si ouverture du flux == NULL alors on affiche le message d'erreur cest pour afficher des msg d'erreurs.
-    if(fichier==NULL){
-        fprintf(stderr,"Erreur flux \n");
+    if(fichier == NULL)
+    {
+        fprintf(stderr, "Erreur lors de l'ouverture du fichier.\n");
         return;
-
     }
-    /* ce bloc ecrit toute les informations de la fonction affichage_competition dans me fichier que l'on va sauvegarder.
-    il commence de la ligne 27 jusqu'a la ligne 56 */
-    fprintf(fichier,"\n La liste des participants : \n");
 
-    
-    fprintf(fichier,"Participants: %d %d \n",c->nbParticipants, c->maxParticipants);
+    fprintf(fichier, "=====================================\n");
+    fprintf(fichier, "          COMPETITION\n");
+    fprintf(fichier, "=====================================\n");
 
+    fprintf(fichier,"Participants : %d/%d\n",c->nbParticipants, c->maxParticipants);
 
-    for(int i=0;i<c->nbParticipants;i++){
-    fprintf(fichier,"%d : %s\n", i+1, c->participants[i].pseudo);
-    }
-   
+    fprintf(fichier,"Nombre de tours : %d\n",c->nbTours);
 
-    fprintf(fichier,"Etat: ");
+    fprintf(fichier, "Etat : ");
 
-    switch (c->etat)
+    switch(c->etat)
     {
         case OUVERTE:
-            fprintf(fichier,"OUVERTE\n");
+            fprintf(fichier, "OUVERTE\n");
             break;
 
         case FERMEE:
-            fprintf(fichier,"FERMEE\n");
+            fprintf(fichier, "FERMEE\n");
             break;
 
         case TERMINEE:
-            fprintf(fichier,"TERMINEE\n");
+            fprintf(fichier, "TERMINEE\n");
             break;
     }
-    
 
-    // fermer le flux que l'on a ouvert sinon il reste ouvert et il peutn y avoir des erreurs d'ecriture.
+    fprintf(fichier,"\n===== PARTICIPANTS =====\n");
+
+    for(int i = 0; i < c->nbParticipants; i++)
+    {
+        fprintf(fichier,"[%d] %s\n",c->participants[i].id_competiteur, c->participants[i].pseudo);
+    }
+
+    fprintf(fichier,"\n===== MATCHS =====\n");
+
+    for(int i = 0; i < c->nbMatchs; i++)
+    {
+        Match *m = c->matchs[i];
+
+        fprintf(fichier, "\n---------------------------------\n");
+
+        if(m == c->racine)
+        {
+            fprintf(fichier, "FINALE (MATCH %d)\n", m->id);
+        }
+        else
+        {
+            fprintf(fichier, "MATCH %d\n", m->id);
+        }
+
+        fprintf(fichier, "---------------------------------\n");
+
+        fprintf(fichier,"Joueur 1 : ");
+
+        if(m->joueur1 != NULL)
+        {
+            fprintf(fichier,"%s\n",  m->joueur1->pseudo);
+        }
+        else
+        {
+            fprintf(fichier,"EN ATTENTE\n");
+        }
+
+        fprintf(fichier,"Joueur 2 : ");
+
+        if(m->joueur2 != NULL)
+        {
+            fprintf(fichier,"%s\n",m->joueur2->pseudo);
+        }
+        else
+        {
+            fprintf(fichier, "EN ATTENTE\n");
+        }
+
+        fprintf(fichier, "Vainqueur : ");
+
+        if(m->vainqueur != NULL)
+        {
+            fprintf(fichier, "%s\n", m->vainqueur->pseudo);
+        }
+        else
+        {
+            fprintf(fichier,"AUCUN\n");
+        }
+    }
+
+    if(c->etat == TERMINEE && c->racine != NULL && c->racine->vainqueur != NULL)
+    {
+        fprintf(fichier,"\n=====================================\n");
+        fprintf(fichier,"CHAMPION : %s\n",c->racine->vainqueur->pseudo);
+        fprintf(fichier,"=====================================\n");
+    }
+
     fclose(fichier);
+
+    printf("Sauvegarde effectuee avec succes dans le fichier %s\n", nomFichier);
 }
