@@ -6,34 +6,34 @@ Nombre de tours : 2
 Etat : TERMINEE
 
 ===== PARTICIPANTS =====
-[1] ihab
-[2] messi
-[3] cr7
-[4] kb9
+[1] omar
+[2] ihab
+[3] marco
+[4] messi
 
 ===== MATCHS =====
 
 ---------------------------------
 FINALE (MATCH 1)
 ---------------------------------
-Joueur 1 : ihab
-Joueur 2 : cr7
-Vainqueur : cr7
-
----------------------------------
-MATCH 2
----------------------------------
-Joueur 1 : ihab
+Joueur 1 : omar
 Joueur 2 : messi
-Vainqueur : ihab
+Vainqueur : messi
 
 ---------------------------------
-MATCH 3
+DEMI-FINALE (MATCH 2)
 ---------------------------------
-Joueur 1 : cr7
-Joueur 2 : kb9
-Vainqueur : cr7
+Joueur 1 : omar
+Joueur 2 : ihab
+Vainqueur : omar
+
+---------------------------------
+DEMI-FINALE (MATCH 3)
+---------------------------------
+Joueur 1 : marco
+Joueur 2 : messi
+Vainqueur : messi
 
 =====================================
-CHAMPION : cr7
+CHAMPION DE LA COMPETITION : messi
 =====================================
